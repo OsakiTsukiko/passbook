@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "array": "c",
+        "passbook_utils.h": "c"
+    }
+}

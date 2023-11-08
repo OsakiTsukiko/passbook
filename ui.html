@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Source+Code+Pro&display=swap');
+    </style>
+    <style>
+        html, body {
+            margin: 0 auto;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: #fce1d8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-family: 'Source Code Pro';
+            width: 100%;
+            height: fit-content;
+            display: flex;
+        }
+
+        .title .left {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            color: #523e38;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .title .right {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            text-align: right;
+            box-sizing: border-box;
+            padding: 10px;
+            color: #523e38;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .table {
+            width: 100%;
+            min-height: 0;
+            box-sizing: border-box;
+            padding-left: 10px;
+            padding-right: 10px;
+            color: #523e38;
+            overflow-y: scroll;
+        }
+
+        .padding {
+            width: 100%;
+            flex: 1;
+        }
+
+        .table table {
+            width: 100%;
+            height: 100%;
+            font-family: 'Source Code Pro';
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table table th {
+            background: #ecc6b9;
+        }
+
+        .table table td, .table table th {
+            border: 3px solid #af8c80;
+            text-align: left;
+            padding: 8px;
+            text-align: right;
+        }
+
+        .table table tr:nth-child(even) {
+            background-color: #fff9f7;
+        }
+
+        income {
+            color: seagreen;
+        }
+
+        expense {
+            color: indianred;
+        }
+
+        .input_div {
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        .input_div input, .input_div select {
+            flex: 1;
+            margin-right: 5px;
+            box-sizing: border-box;
+        }
+
+        .input_div input {
+            border: 2px solid #523e38;
+            background: transparent;
+        }
+
+        .input_div select, .input_div button {
+            border: 2px solid #523e38;
+            background: #af8c80;
+            border-radius: 0px;
+            cursor: pointer;
+        }
+
+        .sum {
+            width: 100%;
+            box-sizing: border-box;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 10px;
+        }
+
+        .sum hr {
+            border: 1px solid #523e38;
+        }
+
+        #sum {
+            width: 100%;
+            text-align: right;
+            color: #523e38;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <div class="left">PassBook</div>
+        <div class="right">Balaban Iosua CS IE1 911/2 Proj1</div>
+    </div>
+    <div class="table" id="table"></div>
+    <div class="padding"></div>
+    <div class="sum">
+        <hr>
+        <div id="sum">= 0 ¥</diiv>
+    </div>
+    <hr>
+    <div class="input_div">
+        <input type="date" id="trans_date_inp" value="2023-01-01" required>
+        <!--<input type="time" id="trans_time_inp">-->
+        <input type="text" placeholder="Description" id="trans_desc_inp" required>
+        <select name="type" id="trans_type_inp" required>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+        </select>
+        <input type="number" value=0 id="trans_val_inp" required>
+        <button onclick="add_transaction()">Enter</button>
+    </div>
+
+    <script>
+        function add_transaction() {
+            var idate = document.getElementById("trans_date_inp").value;
+            var idesc = document.getElementById("trans_desc_inp").value;
+            var itype = document.getElementById("trans_type_inp").value;
+            var ival = document.getElementById("trans_val_inp").value;
+            if (
+                idate != undefined && 
+                idesc != undefined && 
+                idesc.replaceAll(" ", "") != "" && 
+                itype != undefined &&
+                ival != undefined &&
+                Number(ival) != NaN &&
+                Number(ival) >= 0
+            ) {
+                document.getElementById("trans_desc_inp").value = "";
+                document.getElementById("trans_val_inp").value = 0;
+                /* call c func */
+                var d = new Date(idate);
+                window.wv_add_transaction(
+                    d.getTime() / 1000,
+                    idesc,
+                    itype,
+                    Number(ival)
+                ).then(result => {
+                    document.getElementById("table").innerHTML = render_table(result);
+                });
+            }
+        }
+
+        function render_table(table) {
+            var table_content = "<table><tr><th>DATE</th><th>DESCRIPTION</th><th>TYPE</th><th>AMOUNT</th></tr>";
+            var sum = 0;
+            for (data of table) {
+                table_content += "<tr>";
+                
+                let dateObj = new Date(Number(data.date) * 1000);
+                var date_string = "";
+                if (dateObj.getDate() < 10) {
+                    date_string += "0" + dateObj.getDate();
+                } else {
+                    date_string += dateObj.getDate();
+                }
+                date_string += ".";
+                if (dateObj.getMonth() + 1 < 10) {
+                    date_string += "0" + (dateObj.getMonth() + 1);
+                } else {
+                    date_string += (dateObj.getMonth() + 1);
+                }
+                date_string += ".";
+                date_string += dateObj.getFullYear();
+                date_string += " ";
+                
+                /* if (dateObj.getHours() < 10) {
+                    date_string += "0" + dateObj.getHours();
+                } else {
+                    date_string += dateObj.getHours();
+                }
+                date_string += ":";
+                if (dateObj.getMinutes() < 10) {
+                    date_string += "0" + dateObj.getMinutes();
+                } else {
+                    date_string += dateObj.getMinutes();
+                } */
+
+                table_content += "<td>" + date_string + "</td>";
+                table_content += "<td>" + data.description + "</td>";
+                if (data.type == "income") {
+                    table_content += "<td><income>" + data.type + "</income></td>";
+                    table_content += "<td><income>" + data.value + " ¥</income></td>";
+                    sum += Number(data.value);
+                } else {
+                    table_content += "<td><expense>" + data.type + "</expense></td>";
+                    table_content += "<td><expense>" + data.value + " ¥</expense></td>";
+                    sum -= Number(data.value);
+                }
+                table_content += "</tr>";
+            }
+            table_content += "</table>";
+            document.getElementById("sum").textContent = "= " + String(sum) + " ¥";
+            return table_content;
+        }
+
+        window.onload = function () {
+            window.get_transaction_array().then(result => {
+                document.getElementById("table").innerHTML = render_table(result);
+            });
+        }
+    </script>
+</body>
+</html>

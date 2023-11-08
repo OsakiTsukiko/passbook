@@ -1,0 +1,3 @@
+/home/osaki/SCHOOL/CProg/proj1/build/CMakeFiles/passbook.dir
+/home/osaki/SCHOOL/CProg/proj1/build/CMakeFiles/edit_cache.dir
+/home/osaki/SCHOOL/CProg/proj1/build/CMakeFiles/rebuild_cache.dir
