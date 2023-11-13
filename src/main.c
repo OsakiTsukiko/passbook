@@ -26,7 +26,7 @@ typedef struct {
 } context_t_gta;
 
 // function binded to the ui
-// returns a json with all elements of the transaction vecotr (to the ui via webview_return)
+// returns a json with all elements of the transaction vector (to the ui via webview_return)
 void wv_get_transaction_array(const char *seq, const char *req, void *arg) {
   UNUSED(req);
   context_t_gta *context = (context_t_gta *)arg;
@@ -37,7 +37,7 @@ void wv_get_transaction_array(const char *seq, const char *req, void *arg) {
 
 // function binded to the ui
 // adds a transaction to the transaction vector
-// returns a json with all elements of the transaction vecotr (to the ui via webview_return)
+// returns a json with all elements of the transaction vector (to the ui via webview_return)
 void wv_add_transaction(const char *seq, const char *req, void *arg) {
   context_t_gta *context = (context_t_gta *)arg;
 
@@ -52,7 +52,23 @@ void wv_add_transaction(const char *seq, const char *req, void *arg) {
 
 // function binded to the ui
 // removes a transaction from the transaction vector
-// returns a json with all elements of the transaction vecotr (to the ui via webview_return)
+// returns a json with all elements of the transaction vector (to the ui via webview_return)
+void wv_get_transactions_between_dates(const char *seq, const char *req, void *arg) {
+  context_t_gta *context = (context_t_gta *)arg;
+
+  vector* r = transaction_vec_from_dates(req, context->transaction_array);
+
+  if (r->len > 0) {
+    char* json = transaction_vector_to_json(r);
+    printf("%s\n", json);
+    webview_return(context->w, seq, 0, json);
+  } else {
+    webview_return(context->w, seq, 0, "[]");
+  }
+}
+
+// function binded to the ui
+// returns a json with all elements of the transaction vector between the two specified dates (to the ui via webview_return)
 void wv_remove_transaction(const char *seq, const char *req, void *arg) {
   context_t_gta *context = (context_t_gta *)arg;
 
@@ -98,6 +114,7 @@ int main() {
   webview_bind(w, "get_transaction_array", wv_get_transaction_array, &context);
   webview_bind(w, "wv_add_transaction", wv_add_transaction, &context);
   webview_bind(w, "remove_transaction", wv_remove_transaction, &context);
+  webview_bind(w, "get_transactions_between_dates", wv_get_transactions_between_dates, &context);
 
   webview_set_html(w, UI);
   webview_run(w);

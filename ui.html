@@ -131,14 +131,37 @@
             padding-top: 10px;
         }
 
-        .sum hr {
+        hr {
             border: 1px solid #523e38;
+            width: 97.5%;
         }
 
         #sum {
             width: 100%;
             text-align: right;
             color: #523e38;
+        }
+
+        .date_div {
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        .date_div .l {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .date_div .r {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
         }
     </style>
 </head>
@@ -149,9 +172,22 @@
     </div>
     <div class="table" id="table"></div>
     <div class="padding"></div>
+    <hr>
     <div class="sum">
-        <hr>
-        <div id="sum">= 0 ¥</diiv>
+        <div id="sum">= 0 ¥</div>
+    </div>
+    <hr>
+    <div class="date_div">
+        <div class="l">
+            <label> From: </label><input type="date" id="d_inp_1" value="2023-01-01" required>
+            <label> To: </label><input type="date" id="d_inp_2" value="2023-12-31" required>
+        </div>
+        <div class="r">
+            <!-- <input type="checkbox" id="enable_date" name="enable_date">
+            <label for="enable_date">Enable</label> -->
+            <button onclick="calc_between_dates()">Caluclate</button>
+            <button onclick="start()">Reset</button>
+        </div>
     </div>
     <hr>
     <div class="input_div">
@@ -167,6 +203,23 @@
     </div>
 
     <script>
+        function calc_between_dates() {
+            var d1i = document.getElementById("d_inp_1").value;
+            var d2i = document.getElementById("d_inp_2").value;
+            if (d1i != undefined && d2i != undefined) {
+                var d1 = new Date(d1i);
+                var d2 = new Date(d2i);
+                if (d1.getTime() <= d2.getTime()) {
+                    window.get_transactions_between_dates(
+                        d1.getTime() / 1000,
+                        d2.getTime() / 1000
+                    ).then(result => {
+                        document.getElementById("table").innerHTML = render_table(result);
+                    });
+                }
+            }
+        }
+
         function rmv_el(i) {
             /* 
             free(): invalid next size (fast)
@@ -269,11 +322,13 @@
             return table_content;
         }
 
-        window.onload = function () {
+        function start() {
             window.get_transaction_array().then(result => {
                 document.getElementById("table").innerHTML = render_table(result);
             });
         }
+
+        window.onload = start;
     </script>
 </body>
 </html>

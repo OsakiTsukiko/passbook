@@ -36,6 +36,9 @@ char* cstm_strcat(char *dest, char *src);
 // custom strncat that works on dynamically allocated pointers as well (concatenates 2 strings)
 char* cstm_strncat(char *dest, char *src, int n);
 
+// transaction vector from json array of unix dates
+vector* transaction_vec_from_dates(const char* json, vector* vec);
+
 // transaction vector wrappers 
 // (vector uses void pointers so i made some wrappers for ease of use)
 void tv_push_back(vector* vec, transaction* trans);

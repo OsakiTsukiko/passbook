@@ -182,6 +182,35 @@ int transaction_id_from_json(const char* json) {
     return id;
 }
 
+// really, should be unsigned, but im lazy rn...
+vector* transaction_vec_from_dates(const char* json, vector* vec) {
+    vector* res = new_vector();
+    int i = 1;
+
+    int d1 = 0;
+    while (json[i] != ',') {
+        d1 *= 10;
+        d1 += json[i] - '0';
+        i += 1;
+    }
+    i += 1;
+    int d2 = 0;
+    while (json[i] != ']') {
+        d2 *= 10;
+        d2 += json[i] - '0';
+        i += 1;
+    }
+
+    for (int i = 0; i < vector_size(vec); i += 1) {
+        transaction* t = tv_get(vec, i);
+        if (t->date >= d1 && t->date <= d2) {
+            tv_push_back(res, t);
+        }
+    }
+    
+    return res;
+}
+
 char* transaction_vector_to_json(vector* vec) {
     char* res = (char *)malloc(sizeof(char));
     res[0] = '\0';
