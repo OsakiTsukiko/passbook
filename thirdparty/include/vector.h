@@ -11,18 +11,18 @@ VERY PRIMITIVE VECTOR..
 typedef struct _vector
 {
     int len;
-    void** array;
+    void **array;
 } vector;
 
-vector* new_vector();
+vector *new_vector();
 
-int vector_size(vector* vec);
+int vector_size(vector *vec);
 
-void vector_push_front(vector* vec, void* element);
-void vector_push_back(vector* vec, void* element);
-void* vector_pop_front(vector* vec);
-void* vector_pop_back(vector* vec);
+void vector_push_front(vector *vec, void *element);
+void vector_push_back(vector *vec, void *element);
+void* vector_pop_front(vector *vec);
+void* vector_pop_back(vector *vec);
 
-void* vector_remove(vector* vec, unsigned int index);
+void* vector_remove(vector *vec, unsigned int index);
 
 #endif

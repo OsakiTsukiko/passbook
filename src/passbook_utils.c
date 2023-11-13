@@ -163,6 +163,25 @@ transaction* transaction_from_json(const char* json) {
     return bruh;
 }
 
+// really, should be unsigned, but im lazy rn...
+int transaction_id_from_json(const char* json) {
+    /*
+    Programming on the train rn.. not fun
+    waited for the train 3h.. must love cfr
+    */
+    int i = 1;
+    // [5] example
+    
+    int id = 0;
+    while (json[i] != ']') {
+        id *= 10;
+        id += json[i] - '0';
+        i += 1;
+    }
+
+    return id;
+}
+
 char* transaction_vector_to_json(vector* vec) {
     char* res = (char *)malloc(sizeof(char));
     res[0] = '\0';
