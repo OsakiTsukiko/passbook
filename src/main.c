@@ -10,9 +10,11 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <io.h>
 #else
 #include <pthread.h>
 #include <unistd.h>
+#define F_OK 0
 #endif
 
 // Only used to suppress warnings caused by unused parameters.
@@ -30,9 +32,13 @@ typedef struct {
 void wv_get_transaction_array(const char *seq, const char *req, void *arg) {
   UNUSED(req);
   context_t_gta *context = (context_t_gta *)arg;
-  char* json = transaction_vector_to_json(context->transaction_array);
-  printf("%s\n", json);
-  webview_return(context->w, seq, 0, json);
+  if (context->transaction_array->len > 0) {
+    char* json = transaction_vector_to_json(context->transaction_array);
+    printf("%s\n", json);
+    webview_return(context->w, seq, 0, json);
+  } else {
+    webview_return(context->w, seq, 0, "[]");
+  }
 }
 
 // function binded to the ui
@@ -45,9 +51,13 @@ void wv_add_transaction(const char *seq, const char *req, void *arg) {
 
   tv_push_back(context->transaction_array, r);
 
-  char* json = transaction_vector_to_json(context->transaction_array);
-  printf("%s\n", json);
-  webview_return(context->w, seq, 0, json);
+  if (context->transaction_array->len > 0) {
+    char* json = transaction_vector_to_json(context->transaction_array);
+    printf("%s\n", json);
+    webview_return(context->w, seq, 0, json);
+  } else {
+    webview_return(context->w, seq, 0, "[]");
+  }
 }
 
 // function binded to the ui
@@ -100,9 +110,16 @@ int main() {
   // new vector of void pointers 
   vector* transaction_array = new_vector();
 
+  if (access("storage.txt", F_OK) == 0) {
+    load_transaction_vec("storage.txt", transaction_array);
+  } else {
+    tv_push_back(transaction_array, create_transaction("Test Income", 1699377609, TRANSACTION_INCOME, 1500));
+    tv_push_back(transaction_array, create_transaction("Test Expense", 1699436141, TRANSACTION_EXPENSE, 750));
+  }
+
   // push 2 test transactions to the vector
-  tv_push_back(transaction_array, create_transaction("Test Income", 1699377609, TRANSACTION_INCOME, 1500));
-  tv_push_back(transaction_array, create_transaction("Test Expense", 1699436141, TRANSACTION_EXPENSE, 750));
+  // tv_push_back(transaction_array, create_transaction("Test Income", 1699377609, TRANSACTION_INCOME, 1500));
+  // tv_push_back(transaction_array, create_transaction("Test Expense", 1699436141, TRANSACTION_EXPENSE, 750));
 
   // initialize ui
   webview_t w = webview_create(1, NULL);
@@ -119,6 +136,8 @@ int main() {
   webview_set_html(w, UI);
   webview_run(w);
   webview_destroy(w);
+
+  dump_transaction_vec("storage.txt", transaction_array);
   
   return 0;
 }

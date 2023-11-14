@@ -290,3 +290,35 @@ char* transaction_vector_to_json(vector* vec) {
     res = holder;
     return res;
 }
+
+void dump_transaction_vec(char* filename, vector* vec) {
+    FILE *fptr;
+    fptr = fopen(filename, "w");
+    
+    for (int i = 0; i < vector_size(vec); i += 1) {
+        transaction* t = tv_get(vec, i);
+        fprintf(fptr, "%d %d %d %s\n", t->date, t->type, t->amount, t->description);
+    }
+
+    fclose(fptr); 
+}
+
+void load_transaction_vec(char* filename, vector* vec) {
+    FILE *fptr;
+    fptr = fopen(filename, "r");
+    
+    int d;
+    int t;
+    int a;
+    char desc[512];
+
+    while (fscanf(fptr, "%d %d %d", &d, &t, &a) == 3) {
+        fgets(desc, 512, fptr);
+        desc[strlen(desc)-1] = '\0';
+        printf("%d %d %d %s\n", d, t, a, desc);
+        transaction* tr = create_transaction(desc, d, t, a);
+        tv_push_back(vec, tr);
+    }
+
+    fclose(fptr); 
+}

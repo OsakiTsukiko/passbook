@@ -39,6 +39,9 @@ char* cstm_strncat(char *dest, char *src, int n);
 // transaction vector from json array of unix dates
 vector* transaction_vec_from_dates(const char* json, vector* vec);
 
+void dump_transaction_vec(char* filename, vector* vec);
+void load_transaction_vec(char* filename, vector* vec);
+
 // transaction vector wrappers 
 // (vector uses void pointers so i made some wrappers for ease of use)
 void tv_push_back(vector* vec, transaction* trans);
